@@ -89,6 +89,10 @@ class CHelpItems {
 					'description' => _('Performs a DNS query. Returns character string with the required type of information')
 				],
 				[
+					'key' => 'net.dns.perf[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
+					'description' => _('Checks performance of DNS service. Returns 0 - service is down; seconds - the number of seconds spent waiting for response from the service')
+				],
+				[
 					'key' => 'net.if.collisions[if]',
 					'description' => _('Number of out-of-window collisions. Returns integer')
 				],
@@ -397,6 +401,10 @@ class CHelpItems {
 				[
 					'key' => 'net.dns.record[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
 					'description' => _('Performs a DNS query. Returns character string with the required type of information')
+				],
+				[
+					'key' => 'net.dns.perf[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
+					'description' => _('Checks performance of DNS service. Returns 0 - service is down; seconds - the number of seconds spent waiting for response from the service')
 				],
 				[
 					'key' => 'net.if.collisions[if]',

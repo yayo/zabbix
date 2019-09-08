@@ -215,6 +215,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	int			res, type, retrans, retry, use_tcp, i, ret = SYSINFO_RET_FAIL, ip_type = AF_INET;
 	char			*ip, zone[MAX_STRING_LEN], buffer[MAX_STRING_LEN], *zone_str, *param,
 				tmp[MAX_STRING_LEN];
+	double			check_time=zbx_time();
 	struct in_addr		inaddr;
 	struct in6_addr		in6addr;
 #ifndef _WINDOWS
@@ -402,6 +403,21 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	if (1 == short_answer)
 	{
 		SET_UI64_RESULT(result, DNS_RCODE_NOERROR != res ? 0 : 1);
+		ret = SYSINFO_RET_OK;
+		goto clean_dns;
+	}
+
+	if (2 == short_answer)
+	{
+		if (DNS_RCODE_NOERROR != res)
+			SET_DBL_RESULT(result, 0.0);
+		else
+		{
+			check_time = zbx_time() - check_time;
+			if (ZBX_FLOAT_PRECISION > check_time)
+				check_time = ZBX_FLOAT_PRECISION;
+			SET_DBL_RESULT(result, check_time);
+		}
 		ret = SYSINFO_RET_OK;
 		goto clean_dns;
 	}
@@ -699,6 +715,20 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 		return SYSINFO_RET_OK;
 	}
 
+	if (2 == short_answer)
+	{
+		if (NOERROR != hp->rcode || 0 == ntohs(hp->ancount) || -1 == res)
+			SET_DBL_RESULT(result, 0.0);
+		else
+		{
+			check_time = zbx_time() - check_time;
+			if (ZBX_FLOAT_PRECISION > check_time)
+				check_time = ZBX_FLOAT_PRECISION;
+			SET_DBL_RESULT(result, check_time);
+		}
+		return SYSINFO_RET_OK;
+	}
+
 	if (NOERROR != hp->rcode || 0 == ntohs(hp->ancount) || -1 == res)
 	{
 		SET_MSG_RESULT(result, zbx_strdup(NULL, "Cannot perform DNS query."));
@@ -993,4 +1023,8 @@ int	NET_DNS(AGENT_REQUEST *request, AGENT_RESULT *result)
 int	NET_DNS_RECORD(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	return dns_query(request, result, 0);
+}
+int	NET_DNS_PERF(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+	return dns_query(request, result, 2);
 }

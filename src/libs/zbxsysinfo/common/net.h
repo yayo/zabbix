@@ -100,6 +100,7 @@ int	tcp_expect(const char *host, unsigned short port, int timeout, const char *r
 
 int	NET_DNS(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	NET_DNS_RECORD(AGENT_REQUEST *request, AGENT_RESULT *result);
+int	NET_DNS_PERF(AGENT_REQUEST *request, AGENT_RESULT *result);
 int	NET_TCP_PORT(AGENT_REQUEST *request, AGENT_RESULT *result);
 
 #endif /* ZABBIX_SYSINFO_COMMON_NET_H */

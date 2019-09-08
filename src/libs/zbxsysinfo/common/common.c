@@ -69,6 +69,7 @@ ZBX_METRIC	parameters_common[] =
 
 	{"net.dns",		CF_HAVEPARAMS,	NET_DNS,		",zabbix.com"},
 	{"net.dns.record",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",zabbix.com"},
+	{"net.dns.perf",	CF_HAVEPARAMS,	NET_DNS_PERF,		",zabbix.com"},
 	{"net.tcp.dns",		CF_HAVEPARAMS,	NET_DNS,		",zabbix.com"}, /* deprecated */
 	{"net.tcp.dns.query",	CF_HAVEPARAMS,	NET_DNS_RECORD,		",zabbix.com"}, /* deprecated */
 	{"net.tcp.port",	CF_HAVEPARAMS,	NET_TCP_PORT,		",80"},
