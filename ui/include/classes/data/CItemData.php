@@ -36,6 +36,7 @@ final class CItemData {
 			'kernel.openfiles',
 			'modbus.get[endpoint,<slaveid>,<function>,<address>,<count>,<type>,<endianness>,<offset>]',
 			'net.dns.record[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
+			'net.dns.perf[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
 			'net.dns[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
 			'net.if.collisions[if]',
 			'net.if.discovery',
@@ -140,6 +141,7 @@ final class CItemData {
 			'modbus.get[endpoint,<slaveid>,<function>,<address>,<count>,<type>,<endianness>,<offset>]',
 			'mqtt.get[<broker_url>,topic]',
 			'net.dns.record[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
+			'net.dns.perf[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
 			'net.dns[<ip>,name,<type>,<timeout>,<count>,<protocol>]',
 			'net.if.collisions[if]',
 			'net.if.discovery',
@@ -965,6 +967,10 @@ final class CItemData {
 			'net.dns.record[<ip>,name,<type>,<timeout>,<count>,<protocol>]' => [
 				'description' => _('Performs a DNS query. Returns character string with the required type of information'),
 				'value_type' => ITEM_VALUE_TYPE_STR
+			],
+			'net.dns.perf[<ip>,name,<type>,<timeout>,<count>,<protocol>]' => [
+				'description' => _('Checks performance of DNS service. Returns 0 - DNS is down (server did not respond or DNS resolution failed); seconds - the number of seconds spent waiting for response from DNS service'),
+				'value_type' => ITEM_VALUE_TYPE_FLOAT
 			],
 			'net.dns[<ip>,name,<type>,<timeout>,<count>,<protocol>]' => [
 				'description' => _('Checks if DNS service is up. Returns 0 - DNS is down (server did not respond or DNS resolution failed); 1 - DNS is up'),

@@ -75,6 +75,7 @@ ZBX_METRIC	parameters_common[] =
 	{"vfs.dir.get",		CF_HAVEPARAMS,	vfs_dir_get,		VFS_TEST_DIR},
 
 	{"net.dns",		CF_HAVEPARAMS,	net_dns,		",zabbix.com"},
+	{"net.dns.perf",	CF_HAVEPARAMS,	net_dns_perf,		",zabbix.com"},
 	{"net.dns.record",	CF_HAVEPARAMS,	net_dns_record,		",zabbix.com"},
 	{"net.tcp.dns",		CF_HAVEPARAMS,	net_dns,		",zabbix.com"}, /* deprecated */
 	{"net.tcp.dns.query",	CF_HAVEPARAMS,	net_dns_record,		",zabbix.com"}, /* deprecated */

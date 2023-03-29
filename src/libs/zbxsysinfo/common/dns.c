@@ -23,6 +23,7 @@
 
 #include "zbxstr.h"
 #include "zbxnum.h"
+#include "zbxtime.h"
 #include "zbxcomms.h"
 #include "zbxalgo.h"
 
@@ -131,6 +132,7 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	int			res, type, retrans, retry, use_tcp, i, ret = SYSINFO_RET_FAIL, ip_type = AF_INET;
 	char			*ip, zone[MAX_STRING_LEN], buffer[MAX_STRING_LEN], *zone_str, *param,
 				tmp[MAX_STRING_LEN];
+	double			check_time = ( 2 != short_answer ? 0 : zbx_time() );
 	struct in_addr		inaddr;
 	struct in6_addr		in6addr;
 #if !defined(_WINDOWS) && !defined(__MINGW32__)
@@ -318,6 +320,18 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	if (1 == short_answer)
 	{
 		SET_UI64_RESULT(result, DNS_RCODE_NOERROR != res ? 0 : 1);
+		ret = SYSINFO_RET_OK;
+		goto clean_dns;
+	} else if (2 == short_answer)
+	{
+		if (DNS_RCODE_NOERROR != res)
+			SET_DBL_RESULT(result, 0.0);
+		else
+		{
+			check_time = zbx_time() - check_time;
+			const double ZBX_FLOAT_EPSILON=zbx_get_float_epsilon();
+			SET_DBL_RESULT(result, ZBX_FLOAT_EPSILON > check_time ? ZBX_FLOAT_EPSILON : check_time);
+		}
 		ret = SYSINFO_RET_OK;
 		goto clean_dns;
 	}
@@ -629,6 +643,17 @@ static int	dns_query(AGENT_REQUEST *request, AGENT_RESULT *result, int short_ans
 	if (1 == short_answer)
 	{
 		SET_UI64_RESULT(result, -1 == res || NOERROR != hp->rcode || 0 == ntohs(hp->ancount) ? 0 : 1);
+		return SYSINFO_RET_OK;
+	} else if (2 == short_answer)
+	{
+		if (-1 == res || NOERROR != hp->rcode || 0 == ntohs(hp->ancount) )
+			SET_DBL_RESULT(result, 0.0);
+		else
+		{
+			check_time = zbx_time() - check_time;
+			const double ZBX_FLOAT_EPSILON=zbx_get_float_epsilon();
+			SET_DBL_RESULT(result, ZBX_FLOAT_EPSILON > check_time ? ZBX_FLOAT_EPSILON : check_time);
+		}
 		return SYSINFO_RET_OK;
 	}
 
@@ -947,6 +972,11 @@ static int	dns_query_short(AGENT_REQUEST *request, AGENT_RESULT *result)
 	return dns_query(request, result, 1);
 }
 
+static int	dns_query_perf(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+	return dns_query(request, result, 2);
+}
+
 static int	dns_query_long(AGENT_REQUEST *request, AGENT_RESULT *result)
 {
 	return dns_query(request, result, 0);
@@ -969,6 +999,15 @@ int	net_dns(AGENT_REQUEST *request, AGENT_RESULT *result)
 		return zbx_execute_threaded_metric(dns_query_short, request, result);
 #endif
 	return dns_query_short(request, result);
+}
+
+int	net_dns_perf(AGENT_REQUEST *request, AGENT_RESULT *result)
+{
+#if !defined(_WINDOWS) && !defined(__MINGW32__)
+	if (SUCCEED == dns_query_is_tcp(request))
+		return zbx_execute_threaded_metric(dns_query_perf, request, result);
+#endif
+	return dns_query_perf(request, result);
 }
 
 int	net_dns_record(AGENT_REQUEST *request, AGENT_RESULT *result)
